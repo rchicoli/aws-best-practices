@@ -18,13 +18,17 @@ resource "aws_db_instance" "rcwebapper" {
   multi_az                = false
   backup_retention_period = 0
 
-  # backup_window             = "00:45-01:15"
-  # maintenance_window        = "tue:03:24-tue:03:54"
-  # final_snapshot_identifier = "rcwebapper-final"
+  #   final_snapshot_identifier = "rcwebapper-final"
+  skip_final_snapshot = true
 }
 
 resource "aws_db_subnet_group" "rds-subnet-group-rcwebapper" {
   name        = "rds-subnet-group-rcwebapper"
   description = "Subnet group for rds rc_webapper"
-  subnet_ids  = ["${aws_subnet.subnet-rc_webapper-1a.id}", "${aws_subnet.subnet-rc_webapper-1b.id}", "${aws_subnet.subnet-rc_webapper-1c.id}"]
+
+  subnet_ids = [
+    "${aws_subnet.subnet-rc_webapper-1a.id}",
+    "${aws_subnet.subnet-rc_webapper-1b.id}",
+    "${aws_subnet.subnet-rc_webapper-1c.id}",
+  ]
 }
