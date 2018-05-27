@@ -1,0 +1,14 @@
+#  Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# vim swap
+*.swp
+
+# zip files
+*.zip
+
+aws-webapper
