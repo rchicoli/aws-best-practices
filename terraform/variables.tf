@@ -35,15 +35,15 @@ variable "vpc_cidr_block" {
   default     = "10.9.0.0/16"
 }
 
-variable "public_subnet_cidr_block" {
-  description = "Public Subnet CIDR block"
-  default     = "10.9.0.0/24"
-}
+# variable "public_subnet_cidr_block" {
+#   description = "Public Subnet CIDR block"
+#   default     = "10.9.0.0/24"
+# }
 
-variable "private_subnet_cidr_block" {
-  description = "Private Subnet CIDR block"
-  default     = "10.9.1.0/24"
-}
+# variable "private_subnet_cidr_block" {
+#   description = "Private Subnet CIDR block"
+#   default     = "10.9.1.0/24"
+# }
 
 variable "profile" {
   default = "default"

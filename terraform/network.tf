@@ -24,7 +24,7 @@ resource "aws_default_route_table" "main" {
   default_route_table_id = "${aws_vpc.main.default_route_table_id}"
 
   tags {
-    Name = "${var.name}"
+    Name = "${var.name}-private"
   }
 }
 
@@ -37,7 +37,7 @@ resource "aws_route_table" "internet" {
   }
 
   tags {
-    Name        = "${var.name}-public-${format("%02d", count.index+1)}"
+    Name        = "${var.name}-public"
     Environment = "${terraform.workspace}"
   }
 }
@@ -69,7 +69,7 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = false
 
   tags {
-    Name        = "${var.name}-${format("%02d", count.index+1)}"
+    Name        = "${var.name}-public-${format("%02d", count.index+1)}"
     Environment = "${terraform.workspace}"
   }
 }
