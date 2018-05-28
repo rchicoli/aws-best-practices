@@ -1,7 +1,7 @@
-resource "aws_iam_role" "rc_webapper" {
-  name = "rc_webapper"
+resource "aws_iam_role" "rc-admin" {
+  name = "rc-admin"
 
-  #   path = "/"
+  # path = "/"
 
   assume_role_policy = <<POLICY
 {
@@ -20,10 +20,10 @@ resource "aws_iam_role" "rc_webapper" {
 POLICY
 }
 
-resource "aws_iam_policy" "rc_webapper" {
-  name        = "rc_webapper"
-  path        = "/"
-  description = ""
+resource "aws_iam_policy" "rc-admin" {
+  name = "rc-admin"
+
+  # path = "/"
 
   policy = <<POLICY
 {
@@ -48,11 +48,10 @@ resource "aws_iam_policy" "rc_webapper" {
 POLICY
 }
 
-resource "aws_iam_policy_attachment" "rc_webapper-policy-attachment" {
-  name = "rc_webapper-policy-attachment"
-
-  policy_arn = "${aws_iam_policy.rc_webapper.arn}"
+resource "aws_iam_policy_attachment" "rc-admin" {
+  name       = "iam-admin"
+  policy_arn = "${aws_iam_policy.rc-admin.arn}"
   groups     = []
   users      = []
-  roles      = ["rc_webapper"]
+  roles      = ["rc-admin"]
 }

@@ -10,10 +10,10 @@ resource "aws_db_instance" "rcwebapper" {
   password                = "test1234"
   port                    = 3306
   publicly_accessible     = false
-  availability_zone       = "eu-west-1a"
+  availability_zone       = "${data.aws_availability_zones.all.names.0}"
   security_group_names    = []
-  vpc_security_group_ids  = ["${aws_security_group.sg_rc_webapper_test-default.id}"]
-  db_subnet_group_name    = "${aws_db_subnet_group.rds-subnet-group-rcwebapper.id}"
+  vpc_security_group_ids  = ["${aws_security_group.internal.id}"]
+  db_subnet_group_name    = "${aws_db_subnet_group.rds.id}"
   parameter_group_name    = "default.mysql5.6"
   multi_az                = false
   backup_retention_period = 0
@@ -22,13 +22,9 @@ resource "aws_db_instance" "rcwebapper" {
   skip_final_snapshot = true
 }
 
-resource "aws_db_subnet_group" "rds-subnet-group-rcwebapper" {
-  name        = "rds-subnet-group-rcwebapper"
-  description = "Subnet group for rds rc_webapper"
+resource "aws_db_subnet_group" "rds" {
+  subnet_ids = ["${aws_subnet.public.*.id}"]
 
-  subnet_ids = [
-    "${aws_subnet.subnet-rc_webapper-1a.id}",
-    "${aws_subnet.subnet-rc_webapper-1b.id}",
-    "${aws_subnet.subnet-rc_webapper-1c.id}",
-  ]
+  # subnet_ids = [ "${list(aws_subnet.public.*.id)}"]
+  # subnet_ids = ["${chunklist(aws_subnet.public.*.id,3)}"]
 }

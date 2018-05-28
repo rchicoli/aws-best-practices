@@ -1,5 +1,5 @@
-resource "aws_s3_bucket" "rc_webapper" {
-  bucket = "rc-webapper-filestash"
+resource "aws_s3_bucket" "filestash" {
+  bucket = "${var.name}-filestash"
   acl    = "private"
 
   #   policy = <<POLICY

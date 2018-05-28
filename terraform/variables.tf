@@ -2,6 +2,10 @@ variable "region" {
   default = "eu-west-1"
 }
 
+variable "name" {
+  default = "rc-playground"
+}
+
 # variable "region_number" {
 #   # Arbitrary mapping of region name to number to use in
 #   # a VPC's CIDR prefix.
