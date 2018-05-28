@@ -20,6 +20,6 @@ resource "aws_s3_bucket" "filestash" {
   # POLICY
 
   tags {
-    Name = "rc_webapper"
+    Name = "${var.name}"
   }
 }
