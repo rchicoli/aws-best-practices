@@ -80,11 +80,17 @@ resource "aws_route_table_association" "public" {
   subnet_id      = "${element(aws_subnet.public.*.id, count.index)}"
 }
 
-# resource "aws_network_interface" "eni-a31d2b89" {
-#   subnet_id         = "subnet-429afb3f"
-#   private_ips       = ["10.8.0.33"]
-#   security_groups   = ["sg-d4aeaab9"]
+# resource "aws_network_interface" "eni" {
+#   subnet_id = "${aws_subnet.public.0.id}"
+
+#   # private_ips       = ["10.8.0.33"]
+#   security_groups   = ["${aws_security_group.internal.id}"]
 #   source_dest_check = true
+
+#   tags {
+#     Name        = "${var.name}-public"
+#     Environment = "${terraform.workspace}"
+#   }
 # }
 
 resource "aws_security_group" "internal" {
