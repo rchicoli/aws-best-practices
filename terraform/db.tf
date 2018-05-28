@@ -10,7 +10,7 @@ resource "aws_db_instance" "rcwebapper" {
   password                = "test1234"
   port                    = 3306
   publicly_accessible     = false
-  availability_zone       = "eu-central-1c"
+  availability_zone       = "eu-west-1a"
   security_group_names    = []
   vpc_security_group_ids  = ["${aws_security_group.sg_rc_webapper_test-default.id}"]
   db_subnet_group_name    = "${aws_db_subnet_group.rds-subnet-group-rcwebapper.id}"

@@ -1,5 +1,5 @@
 provider "aws" {
-  region                  = "eu-central-1"
+  region                  = "eu-west-1"
   shared_credentials_file = "~/.aws/credentials"
   profile                 = "default"
 }
@@ -23,6 +23,14 @@ resource "aws_internet_gateway" "rc_webapper" {
   }
 }
 
+# resource "aws_default_route_table" "rt-private-subnet" {
+#   default_route_table_id = "${aws_vpc.vpc.default_route_table_id}"
+
+#   tags {
+#     Name = "${var.rt-private-subnet-tag}"
+#   }
+# }
+
 resource "aws_route_table" "rc_webapper" {
   vpc_id = "${aws_vpc.rc_webapper.id}"
 
@@ -37,7 +45,7 @@ resource "aws_route_table" "rc_webapper" {
 resource "aws_subnet" "subnet-rc_webapper-1a" {
   vpc_id                  = "${aws_vpc.rc_webapper.id}"
   cidr_block              = "10.9.0.0/24"
-  availability_zone       = "eu-central-1a"
+  availability_zone       = "eu-west-1a"
   map_public_ip_on_launch = false
 
   tags {
@@ -48,7 +56,7 @@ resource "aws_subnet" "subnet-rc_webapper-1a" {
 resource "aws_subnet" "subnet-rc_webapper-1b" {
   vpc_id                  = "${aws_vpc.rc_webapper.id}"
   cidr_block              = "10.9.1.0/24"
-  availability_zone       = "eu-central-1b"
+  availability_zone       = "eu-west-1b"
   map_public_ip_on_launch = false
 
   tags {
@@ -59,7 +67,7 @@ resource "aws_subnet" "subnet-rc_webapper-1b" {
 resource "aws_subnet" "subnet-rc_webapper-1c" {
   vpc_id                  = "${aws_vpc.rc_webapper.id}"
   cidr_block              = "10.9.2.0/24"
-  availability_zone       = "eu-central-1c"
+  availability_zone       = "eu-west-1c"
   map_public_ip_on_launch = false
 
   tags {
@@ -138,5 +146,14 @@ resource "aws_security_group" "sg_rc_webapper_test-default" {
 
 resource "aws_vpc_endpoint" "s3" {
   vpc_id       = "${aws_vpc.rc_webapper.id}"
-  service_name = "com.amazonaws.eu-central-1.s3"
+  service_name = "com.amazonaws.eu-west-1.s3"
+}
+
+# resource "aws_vpc_endpoint_route_table_association" "endpoint-s3-rta" {
+#   vpc_endpoint_id = "${aws_vpc_endpoint.s3.id}"
+#   route_table_id  = "${aws_default_route_table.rc_webapper.id}"
+# }
+resource "aws_vpc_endpoint_route_table_association" "endpoint-s3-rta" {
+  vpc_endpoint_id = "${aws_vpc_endpoint.s3.id}"
+  route_table_id  = "${aws_route_table.rc_webapper.id}"
 }

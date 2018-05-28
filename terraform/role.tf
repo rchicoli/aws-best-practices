@@ -38,7 +38,8 @@ resource "aws_iam_policy" "rc_webapper" {
         "apigateway:*",
         "logs:*",
         "ec2:*",
-        "lambda:*"
+        "lambda:*",
+        "kinesis:*"
       ],
       "Resource": "*"
     }
