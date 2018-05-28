@@ -12,12 +12,13 @@ resource "aws_lambda_function" "process-requests" {
   timeout = "5"
 
   vpc_config {
-    subnet_ids         = ["${aws_subnet.public.*.id}"]
+    subnet_ids         = ["${aws_subnet.private.*.id}", "${aws_subnet.public.*.id}"]
     security_group_ids = ["${aws_security_group.internal.id}"]
   }
 
   tags {
-    Name = "rc_webapper"
+    Name        = "${var.name}-${format("%02d", count.index+1)}"
+    Environment = "${terraform.workspace}"
   }
 }
 

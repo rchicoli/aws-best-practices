@@ -20,11 +20,16 @@ resource "aws_db_instance" "rcwebapper" {
 
   #   final_snapshot_identifier = "rcwebapper-final"
   skip_final_snapshot = true
+
+  tags {
+    Name        = "${var.name}-${format("%02d", count.index+1)}"
+    Environment = "${terraform.workspace}"
+  }
 }
 
 resource "aws_db_subnet_group" "rds" {
-  subnet_ids = ["${aws_subnet.public.*.id}"]
+  subnet_ids = ["${aws_subnet.private.*.id}"]
 
-  # subnet_ids = [ "${list(aws_subnet.public.*.id)}"]
-  # subnet_ids = ["${chunklist(aws_subnet.public.*.id,3)}"]
+  # subnet_ids = [ "${list(aws_subnet.private.*.id)}"]
+  # subnet_ids = ["${chunklist(aws_subnet.private.*.id,3)}"]
 }
