@@ -12,7 +12,7 @@ resource "aws_db_instance" "rcwebapper" {
   publicly_accessible     = false
   availability_zone       = "${data.aws_availability_zones.all.names.0}"
   security_group_names    = []
-  vpc_security_group_ids  = ["${aws_security_group.internal.id}"]
+  vpc_security_group_ids  = ["${aws_default_security_group.main.id}"]
   db_subnet_group_name    = "${aws_db_subnet_group.rds.id}"
   parameter_group_name    = "default.mysql5.6"
   multi_az                = false
@@ -22,7 +22,7 @@ resource "aws_db_instance" "rcwebapper" {
   skip_final_snapshot = true
 
   tags {
-    Name        = "${var.name}-${format("%02d", count.index+1)}"
+    Name        = "${var.name}"
     Environment = "${terraform.workspace}"
   }
 }

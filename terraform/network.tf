@@ -93,7 +93,7 @@ resource "aws_route_table_association" "public" {
 #   }
 # }
 
-resource "aws_security_group" "internal" {
+resource "aws_default_security_group" "main" {
   vpc_id = "${aws_vpc.main.id}"
 
   ingress {
@@ -111,6 +111,26 @@ resource "aws_security_group" "internal" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+# resource "aws_security_group" "internal" {
+#   name   = "internal"
+#   vpc_id = "${aws_vpc.main.id}"
+
+#   ingress {
+#     from_port       = 0
+#     to_port         = 0
+#     protocol        = "-1"
+#     security_groups = []
+#     self            = true
+#   }
+
+#   egress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+# }
 
 # resource "aws_security_group_rule" "web_ssh_in" {
 #   security_group_id = "${aws_security_group.web.id}"

@@ -12,12 +12,12 @@ resource "aws_lambda_function" "process-requests" {
   timeout = "5"
 
   vpc_config {
-    subnet_ids         = ["${aws_subnet.private.*.id}", "${aws_subnet.public.*.id}"]
-    security_group_ids = ["${aws_security_group.internal.id}"]
+    subnet_ids         = ["${aws_subnet.public.*.id}"]
+    security_group_ids = ["${aws_default_security_group.main.id}"]
   }
 
   tags {
-    Name        = "${var.name}-${format("%02d", count.index+1)}"
+    Name        = "${var.name}"
     Environment = "${terraform.workspace}"
   }
 }
@@ -40,3 +40,12 @@ resource "aws_s3_bucket_notification" "trigger-s3-object-created" {
     # filter_suffix       = ".csv"
   }
 }
+
+# resource "aws_lambda_event_source_mapping" "event_source_mapping" {
+#   batch_size        = 100
+#   event_source_arn  = "arn:aws:kinesis:REGION:123456789012:stream/stream_name"
+#   enabled           = true
+#   function_name     = "arn:aws:lambda:REGION:123456789012:function:function_name"
+#   starting_position = "TRIM_HORIZON|LATEST"
+# }
+
