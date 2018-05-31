@@ -145,10 +145,22 @@ resource "aws_default_security_group" "main" {
 
 resource "aws_vpc_endpoint" "s3" {
   vpc_id       = "${aws_vpc.main.id}"
+  subnet_ids   = ["${aws_subnet.private.*.id}"]
   service_name = "com.amazonaws.${var.region}.s3"
 }
 
 resource "aws_vpc_endpoint_route_table_association" "s3" {
   vpc_endpoint_id = "${aws_vpc_endpoint.s3.id}"
+  route_table_id  = "${aws_default_route_table.main.id}"
+}
+
+resource "aws_vpc_endpoint" "kinesis" {
+  vpc_id       = "${aws_vpc.main.id}"
+  subnet_ids   = ["${aws_subnet.private.*.id}"]
+  service_name = "com.amazonaws.${var.region}.kinesis-streams"
+}
+
+resource "aws_vpc_endpoint_route_table_association" "kinesis" {
+  vpc_endpoint_id = "${aws_vpc_endpoint.kinesis.id}"
   route_table_id  = "${aws_default_route_table.main.id}"
 }
