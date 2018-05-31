@@ -1,4 +1,4 @@
-package emailer
+package api
 
 // {
 //     "address": "contato@pousadaareias.com.br",
@@ -16,7 +16,7 @@ package emailer
 // }
 
 // Body ...
-type Body struct {
+type EmailerRequestBody struct {
 	Firstname string `json:"firstname"`
 	Lastname  string `json:"lastname"`
 	Email     string `json:"email"`

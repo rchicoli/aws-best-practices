@@ -10,7 +10,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 
-	api "github.com/rchicoli/aws-best-practices/api/emailer"
+	"github.com/rchicoli/aws-best-practices/api"
 	"github.com/rchicoli/aws-best-practices/pkg/emailer"
 )
 
@@ -36,7 +36,7 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		return response("", http.StatusBadRequest, ErrNameNotProvided)
 	}
 
-	payload := api.Body{}
+	payload := api.EmailerRequestBody{}
 	body := json.RawMessage(request.Body)
 	if err := json.Unmarshal(body, &payload); err != nil {
 		return response("", http.StatusBadRequest, err)
