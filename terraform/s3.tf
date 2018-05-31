@@ -2,14 +2,23 @@ resource "aws_s3_bucket" "filestash" {
   bucket = "${var.name}-filestash"
   acl    = "private"
 
+  force_destroy = true
+
   tags {
     Name = "${var.name}"
   }
 }
 
-resource "aws_s3_bucket" "logs" {
-  bucket = "${var.name}-logs"
+resource "aws_s3_bucket" "log" {
+  bucket = "${var.name}-log"
   acl    = "private"
+
+  force_destroy = true
+
+  logging {
+    target_bucket = "${aws_s3_bucket.filestash.id}"
+    target_prefix = "log/"
+  }
 
   tags {
     Name = "${var.name}"
@@ -17,7 +26,7 @@ resource "aws_s3_bucket" "logs" {
 }
 
 resource "aws_s3_bucket_policy" "allow-cloudwatch-logs-to-export-to-s3" {
-  bucket = "${aws_s3_bucket.filestash.id}"
+  bucket = "${aws_s3_bucket.log.id}"
 
   policy = <<POLICY
 {
@@ -29,7 +38,7 @@ resource "aws_s3_bucket_policy" "allow-cloudwatch-logs-to-export-to-s3" {
         "Service": "logs.eu-west-1.amazonaws.com"
       },
       "Action": "s3:GetBucketAcl",
-      "Resource": "arn:aws:s3:::${aws_s3_bucket.logs.id}"
+      "Resource": "arn:aws:s3:::${aws_s3_bucket.log.id}"
     },
     {
       "Effect": "Allow",
@@ -37,7 +46,7 @@ resource "aws_s3_bucket_policy" "allow-cloudwatch-logs-to-export-to-s3" {
         "Service": "logs.eu-west-1.amazonaws.com"
       },
       "Action": "s3:PutObject",
-      "Resource": "arn:aws:s3:::${aws_s3_bucket.logs.id}/*",
+      "Resource": "arn:aws:s3:::${aws_s3_bucket.log.id}/*",
       "Condition": {
         "StringEquals": {
           "s3:x-amz-acl": "bucket-owner-full-control"
