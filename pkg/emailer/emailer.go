@@ -21,22 +21,6 @@ var (
 	// Dots are not allowed in the beginning, end or in occurances of more than 1 in the email address
 
 	// https://stackoverflow.com/questions/2049502/what-characters-are-allowed-in-an-email-address
-	// addr-spec   =  local-part "@" domain        ; global address
-	// local-part  =  word *("." word)             ; uninterpreted
-	// 											   ; case-preserved
-	// 	domain      =  sub-domain *("." sub-domain)
-	// 	sub-domain  =  domain-ref / domain-literal
-	// 	domain-ref  =  atom                         ; symbolic reference
-
-	//  And as usual, Wikipedia has a decent article on email addresses:
-	// 	The local-part of the email address may use any of these ASCII characters:
-
-	// 	uppercase and lowercase Latin letters A to Z and a to z;
-	// 	digits 0 to 9;
-	// 	special characters !#$%&'*+-/=?^_`{|}~;
-	// 	dot ., provided that it is not the first or last character unless quoted, and provided also that it does not appear consecutively unless quoted (e.g. John..Doe@example.com is not allowed but "John..Doe"@example.com is allowed);
-	// 	space and "(),:;<>@[\] characters are allowed with restrictions (they are only allowed inside a quoted string, as described in the paragraph below, and in addition, a backslash or double-quote must be preceded by a backslash);
-	// 	comments are allowed with parentheses at either end of the local-part; e.g. john.smith(comment)@example.com and (comment)john.smith@example.com are both equivalent to john.smith@example.com.
 
 	userDotRegexp = regexp.MustCompile(`(^\.)|(\.$)|([.]{2,})`)
 
@@ -49,21 +33,13 @@ func Validate(email string) error {
 	// 	return ErrInvalidFormat
 	// }
 
-	at := strings.LastIndex(email, "@")
-	if at <= 0 || at > len(email)-3 {
-		return ErrInvalidFormat
+	user, host, err := parseEmail(email)
+	if err != nil {
+		return err
 	}
-
-	user := email[:at]
-	host := email[at+1:]
-	if at <= 0 || at > len(email)-3 {
-		return ErrInvalidFormat
-	}
-
 	if userDotRegexp.MatchString(user) || !userRegexp.MatchString(user) || !hostRegexp.MatchString(host) {
 		return ErrInvalidFormat
 	}
-
 	// if emailRegexp.MatchString(email) {
 	// 	return ErrInvalidFormat
 	// }
@@ -83,6 +59,15 @@ func Validate(email string) error {
 	}
 
 	return nil
+}
+
+func parseEmail(email string) (string, string, error) {
+	i := strings.LastIndexByte(email, '@')
+	if i <= 0 {
+		return "", "", ErrInvalidFormat
+	}
+
+	return email[:i], email[i+1:], nil
 }
 
 // Normalize normalizes email address.

@@ -21,3 +21,8 @@ type EmailerRequestBody struct {
 	Lastname  string `json:"lastname"`
 	Email     string `json:"email"`
 }
+
+// EmailerResponseBody ...
+type EmailerResponseBody struct {
+	Status string `json:"status"`
+}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"log"
 	"math/rand"
@@ -13,6 +14,10 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kinesis"
+	lambdaSvc "github.com/aws/aws-sdk-go/service/lambda"
+
+	"github.com/rchicoli/aws-best-practices/api"
+	"github.com/rchicoli/aws-best-practices/pkg/emailer"
 )
 
 var (
@@ -33,14 +38,19 @@ func main() {
 		log.Fatalf("wrong session: %v", err)
 	}
 
-	kc := &KinesisService{
-		client:      kinesis.New(sess),
-		requestPool: make([]*kinesis.PutRecordsRequestEntry, 100),
-		streamName:  "rc-playground",
-		shards:      10,
+	svc := &AWSService{
+		LambdaService: &LambdaService{
+			client: lambdaSvc.New(sess),
+		},
+		KinesisService: &KinesisService{
+			client:      kinesis.New(sess),
+			requestPool: make([]*kinesis.PutRecordsRequestEntry, 100),
+			streamName:  "rc-playground",
+			shards:      10,
+		},
 	}
 
-	lambda.Start(kc.Handler)
+	lambda.Start(svc.Handler)
 }
 
 type KinesisService struct {
@@ -50,10 +60,19 @@ type KinesisService struct {
 	requestPool []*kinesis.PutRecordsRequestEntry
 }
 
+type LambdaService struct {
+	client *lambdaSvc.Lambda
+}
+
+type AWSService struct {
+	LambdaService  *LambdaService
+	KinesisService *KinesisService
+}
+
 // Handler is your Lambda function handler
 // It uses Amazon API Gateway request/responses provided by the aws-lambda-go/events package,
 // However you could use other event sources (S3, Kinesis etc), or JSON-decoded primitive types such as 'string'.
-func (kc *KinesisService) Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func (svc *AWSService) Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
 	// stdout and stderr are sent to AWS CloudWatch Logs
 	log.Printf("Processing Lambda request %s\n", request.RequestContext.RequestID)
@@ -63,18 +82,38 @@ func (kc *KinesisService) Handler(ctx context.Context, request events.APIGateway
 		return response("", http.StatusBadRequest, ErrNameNotProvided)
 	}
 
-	rdn := strconv.Itoa(rand.Intn(kc.shards))
+	rdn := strconv.Itoa(rand.Intn(svc.KinesisService.shards))
 
-	_, err := kc.client.PutRecord(&kinesis.PutRecordInput{
+	_, err := svc.KinesisService.client.PutRecord(&kinesis.PutRecordInput{
 		Data:         []byte(request.Body),
-		StreamName:   aws.String(kc.streamName),
+		StreamName:   aws.String(svc.KinesisService.streamName),
 		PartitionKey: aws.String(rdn),
 	})
 	if err != nil {
 		return response("could not put records into kinesis stream", http.StatusInternalServerError, err)
 	}
 
-	return response("OK", http.StatusOK, nil)
+	payload := api.EmailerRequestBody{}
+	body := json.RawMessage(request.Body)
+	if err := json.Unmarshal(body, &payload); err != nil {
+		return response("", http.StatusBadRequest, err)
+	}
+	if payload.Email == "" {
+		return response("", http.StatusBadRequest, ErrBadRequest)
+	}
+	if err := emailer.Validate(payload.Email); err != nil {
+		return response("error validating email", http.StatusBadRequest, err)
+	}
+
+	result, err := svc.LambdaService.client.Invoke(&lambdaSvc.InvokeInput{
+		FunctionName: aws.String("SMTPHello"),
+		Payload:      []byte(payload.Email),
+	})
+	if err != nil {
+		return response("could not invoke lambda function", http.StatusInternalServerError, err)
+	}
+
+	return response(string(result.Payload), http.StatusOK, nil)
 
 }
 
