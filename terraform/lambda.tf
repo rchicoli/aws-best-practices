@@ -1,10 +1,11 @@
 resource "aws_lambda_function" "processor" {
-  filename      = "../cmd/processor/main.zip"
-  function_name = "${var.name}-processor"
-  role          = "${aws_iam_role.rc-admin.arn}"
-  handler       = "main"
-  runtime       = "go1.x"
-  timeout       = "5"
+  filename         = "../cmd/processor/main.zip"
+  function_name    = "${var.name}-processor"
+  role             = "${aws_iam_role.rc-admin.arn}"
+  handler          = "main"
+  runtime          = "go1.x"
+  timeout          = "5"
+  source_code_hash = "${base64sha256(file("../cmd/processor/main.zip"))}"
 
   vpc_config {
     subnet_ids         = ["${aws_subnet.private.*.id}"]
@@ -44,12 +45,13 @@ resource "aws_s3_bucket_notification" "trigger-s3-object-created" {
 #   starting_position = "TRIM_HORIZON|LATEST"
 # }
 resource "aws_lambda_function" "hello" {
-  filename      = "../cmd/hello/main.zip"
-  function_name = "${var.name}-hello"
-  role          = "${aws_iam_role.rc-admin.arn}"
-  handler       = "main"
-  runtime       = "go1.x"
-  timeout       = "5"
+  filename         = "../cmd/hello/main.zip"
+  function_name    = "${var.name}-hello"
+  role             = "${aws_iam_role.rc-admin.arn}"
+  handler          = "main"
+  runtime          = "go1.x"
+  timeout          = "5"
+  source_code_hash = "${base64sha256(file("../cmd/processor/main.zip"))}"
 
   vpc_config {
     subnet_ids         = ["${aws_subnet.public.*.id}"]
