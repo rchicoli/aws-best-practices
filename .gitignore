@@ -11,4 +11,4 @@
 # zip files
 *.zip
 
-aws-webapper
+**/main
