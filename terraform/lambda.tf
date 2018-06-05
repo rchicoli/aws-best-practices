@@ -1,8 +1,8 @@
 resource "aws_lambda_function" "processor" {
-  filename      = "rc_webapper.zip"
+  filename      = "../cmd/processor/main.zip"
   function_name = "${var.name}-processor"
   role          = "${aws_iam_role.rc-admin.arn}"
-  handler       = "aws-webapper"
+  handler       = "main"
   runtime       = "go1.x"
   timeout       = "5"
 
@@ -17,7 +17,7 @@ resource "aws_lambda_function" "processor" {
   }
 }
 
-resource "aws_lambda_permission" "allow-s3-access" {
+resource "aws_lambda_permission" "allow-s3-to-access-lambda" {
   action        = "lambda:InvokeFunction"
   function_name = "${aws_lambda_function.processor.function_name}"
   principal     = "s3.amazonaws.com"
@@ -44,15 +44,15 @@ resource "aws_s3_bucket_notification" "trigger-s3-object-created" {
 #   starting_position = "TRIM_HORIZON|LATEST"
 # }
 resource "aws_lambda_function" "hello" {
-  filename      = "rc_webapper.zip"
+  filename      = "../cmd/hello/main.zip"
   function_name = "${var.name}-hello"
   role          = "${aws_iam_role.rc-admin.arn}"
-  handler       = "aws-webapper"
+  handler       = "main"
   runtime       = "go1.x"
   timeout       = "5"
 
   vpc_config {
-    subnet_ids         = ["${aws_subnet.private.*.id}"]
+    subnet_ids         = ["${aws_subnet.public.*.id}"]
     security_group_ids = ["${aws_default_security_group.main.id}"]
   }
 
