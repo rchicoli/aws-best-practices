@@ -33,7 +33,7 @@ func Validate(email string) error {
 	// 	return ErrInvalidFormat
 	// }
 
-	user, host, err := parseEmail(email)
+	user, host, err := ParseEmail(email)
 	if err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func Validate(email string) error {
 	return nil
 }
 
-func parseEmail(email string) (string, string, error) {
+func ParseEmail(email string) (string, string, error) {
 	i := strings.LastIndexByte(email, '@')
 	if i <= 0 {
 		return "", "", ErrInvalidFormat

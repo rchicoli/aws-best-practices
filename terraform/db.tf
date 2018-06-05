@@ -29,7 +29,4 @@ resource "aws_db_instance" "rcwebapper" {
 
 resource "aws_db_subnet_group" "rds" {
   subnet_ids = ["${aws_subnet.private.*.id}"]
-
-  # subnet_ids = [ "${list(aws_subnet.private.*.id)}"]
-  # subnet_ids = ["${chunklist(aws_subnet.private.*.id,3)}"]
 }

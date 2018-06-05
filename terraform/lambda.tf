@@ -1,15 +1,10 @@
-resource "aws_lambda_function" "process-requests" {
-  # s3_bucket = "rc-webapper-filestash"
-  # s3_bucket = "code-repo"
-  # s3_key    = "rc_webapper.zip"
-  filename = "rc_webapper.zip"
-
-  function_name = "${var.name}"
-
-  role    = "${aws_iam_role.rc-admin.arn}"
-  handler = "aws-webapper"
-  runtime = "go1.x"
-  timeout = "5"
+resource "aws_lambda_function" "processor" {
+  filename      = "rc_webapper.zip"
+  function_name = "${var.name}-processor"
+  role          = "${aws_iam_role.rc-admin.arn}"
+  handler       = "aws-webapper"
+  runtime       = "go1.x"
+  timeout       = "5"
 
   vpc_config {
     subnet_ids         = ["${aws_subnet.private.*.id}"]
@@ -24,7 +19,7 @@ resource "aws_lambda_function" "process-requests" {
 
 resource "aws_lambda_permission" "allow-s3-access" {
   action        = "lambda:InvokeFunction"
-  function_name = "${aws_lambda_function.process-requests.function_name}"
+  function_name = "${aws_lambda_function.processor.function_name}"
   principal     = "s3.amazonaws.com"
   source_arn    = "${aws_s3_bucket.filestash.arn}"
 }
@@ -33,7 +28,7 @@ resource "aws_s3_bucket_notification" "trigger-s3-object-created" {
   bucket = "${aws_s3_bucket.filestash.id}"
 
   lambda_function {
-    lambda_function_arn = "${aws_lambda_function.process-requests.arn}"
+    lambda_function_arn = "${aws_lambda_function.processor.arn}"
     events              = ["s3:ObjectCreated:*"]
 
     # filter_prefix       = "content-packages/"
@@ -48,19 +43,13 @@ resource "aws_s3_bucket_notification" "trigger-s3-object-created" {
 #   function_name     = "arn:aws:lambda:REGION:123456789012:function:function_name"
 #   starting_position = "TRIM_HORIZON|LATEST"
 # }
-
-resource "aws_lambda_function" "smtp" {
-  # s3_bucket = "rc-webapper-filestash"
-  # s3_bucket = "code-repo"
-  # s3_key    = "rc_webapper.zip"
-  filename = "rc_webapper.zip"
-
-  function_name = "${var.name}"
-
-  role    = "${aws_iam_role.rc-admin.arn}"
-  handler = "aws-webapper"
-  runtime = "go1.x"
-  timeout = "5"
+resource "aws_lambda_function" "hello" {
+  filename      = "rc_webapper.zip"
+  function_name = "${var.name}-hello"
+  role          = "${aws_iam_role.rc-admin.arn}"
+  handler       = "aws-webapper"
+  runtime       = "go1.x"
+  timeout       = "5"
 
   vpc_config {
     subnet_ids         = ["${aws_subnet.private.*.id}"]

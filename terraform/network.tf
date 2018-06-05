@@ -144,9 +144,9 @@ resource "aws_default_security_group" "main" {
 # }
 
 resource "aws_vpc_endpoint" "s3" {
-  vpc_id       = "${aws_vpc.main.id}"
-  subnet_ids   = ["${aws_subnet.private.*.id}"]
-  service_name = "com.amazonaws.${var.region}.s3"
+  vpc_id            = "${aws_vpc.main.id}"
+  vpc_endpoint_type = "Gateway"
+  service_name      = "com.amazonaws.${var.region}.s3"
 }
 
 resource "aws_vpc_endpoint_route_table_association" "s3" {
@@ -155,12 +155,65 @@ resource "aws_vpc_endpoint_route_table_association" "s3" {
 }
 
 resource "aws_vpc_endpoint" "kinesis" {
-  vpc_id       = "${aws_vpc.main.id}"
-  subnet_ids   = ["${aws_subnet.private.*.id}"]
-  service_name = "com.amazonaws.${var.region}.kinesis-streams"
+  vpc_id             = "${aws_vpc.main.id}"
+  vpc_endpoint_type  = "Interface"
+  subnet_ids         = ["${aws_subnet.private.*.id}"]
+  security_group_ids = ["${aws_default_security_group.main.id}"]
+  service_name       = "com.amazonaws.${var.region}.kinesis-streams"
 }
 
-resource "aws_vpc_endpoint_route_table_association" "kinesis" {
-  vpc_endpoint_id = "${aws_vpc_endpoint.kinesis.id}"
-  route_table_id  = "${aws_default_route_table.main.id}"
-}
+# resource "aws_eip" "eipalloc-8cf0b7b1" {
+#   network_interface = "eni-af348ca8"
+#   vpc               = true
+# }
+
+
+# resource "aws_nat_gateway" "public" {
+#   allocation_id = "${aws_eip.nat.id}"
+#   subnet_id     = "${aws_subnet.public.id}"
+# }
+
+
+# resource "aws_network_interface" "eni-9a7409b9" {
+#   subnet_id         = "subnet-4347f525"
+#   private_ips       = ["10.9.2.13"]
+#   security_groups   = ["sg-c2d196bf"]
+#   source_dest_check = true
+# }
+
+
+# resource "aws_network_interface" "eni-d4b8afe1" {
+#   subnet_id         = "subnet-1aee6c52"
+#   private_ips       = ["10.9.0.114"]
+#   security_groups   = ["sg-c2d196bf"]
+#   source_dest_check = true
+# }
+
+
+# resource "aws_network_interface" "eni-e515ade2" {
+#   subnet_id         = "subnet-939c60c9"
+#   private_ips       = ["10.9.1.230"]
+#   security_groups   = ["sg-c2d196bf"]
+#   source_dest_check = true
+# }
+
+
+# resource "aws_network_interface" "multi-ip" {
+#   subnet_id   = "${aws_subnet.main.id}"
+#   private_ips = ["10.0.0.10", "10.0.0.11"]
+# }
+
+
+# resource "aws_eip" "one" {
+#   vpc                       = true
+#   network_interface         = "${aws_network_interface.multi-ip.id}"
+#   associate_with_private_ip = "10.0.0.10"
+# }
+
+
+# resource "aws_eip" "two" {
+#   vpc                       = true
+#   network_interface         = "${aws_network_interface.multi-ip.id}"
+#   associate_with_private_ip = "10.0.0.11"
+# }
+

@@ -1,8 +1,12 @@
 resource "aws_s3_bucket" "filestash" {
-  bucket = "${var.name}-filestash"
-  acl    = "private"
-
+  bucket        = "${var.name}-filestash"
+  acl           = "private"
   force_destroy = true
+
+  logging {
+    target_bucket = "${aws_s3_bucket.log.id}"
+    target_prefix = "log/"
+  }
 
   tags {
     Name = "${var.name}"
@@ -10,15 +14,9 @@ resource "aws_s3_bucket" "filestash" {
 }
 
 resource "aws_s3_bucket" "log" {
-  bucket = "${var.name}-log"
-  acl    = "private"
-
+  bucket        = "${var.name}-log"
+  acl           = "log-delivery-write"
   force_destroy = true
-
-  logging {
-    target_bucket = "${aws_s3_bucket.filestash.id}"
-    target_prefix = "log/"
-  }
 
   tags {
     Name = "${var.name}"

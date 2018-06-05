@@ -106,7 +106,7 @@ func (svc *AWSService) Handler(ctx context.Context, request events.APIGatewayPro
 	}
 
 	result, err := svc.LambdaService.client.Invoke(&lambdaSvc.InvokeInput{
-		FunctionName: aws.String("SMTPHello"),
+		FunctionName: aws.String("rc-test2"),
 		Payload:      []byte(payload.Email),
 	})
 	if err != nil {
