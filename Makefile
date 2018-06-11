@@ -22,7 +22,13 @@ zip:
 create_environment:
 	cd $(TERRAFORM_PATH) && terraform apply -auto-approve; cd -
 
+plan:
+	cd $(TERRAFORM_PATH) && terraform plan; cd -
+
 update: create_environment
 
 delete_environment:
 	cd $(TERRAFORM_PATH) && terraform destroy; cd -
+
+local:
+	sam local start-api
