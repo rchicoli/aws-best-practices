@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -16,8 +17,15 @@ func main() {
 
 	url := flag.String("url", "", "API endpoint")
 	payload := flag.String("payload", ``, "JSON request body")
-	apiKey := flag.String("x-api-key", "", "API key")
+	apiKey := flag.String("api-key", "", "API key")
 	region := flag.String("region", "", "AWS region")
+
+	flag.Parse()
+
+	if *payload == "" || *url == "" {
+		flag.PrintDefaults()
+		os.Exit(2)
+	}
 
 	p := bytes.NewReader([]byte(*payload))
 
