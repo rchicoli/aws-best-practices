@@ -1,0 +1,48 @@
+
+
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+
+Description: An example API written in Golang
+Resources:
+  HelloFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: main
+      Runtime: go1.x
+      Events:
+        RootHandler:
+          Type: Api
+          Properties:
+            Path: /
+            Method: post
+  # Api:
+  #   Type: AWS::Serverless::Api
+  #   Properties:
+  #     StageName: testing
+  #     DefinitionUri: swagger.yml
+  # TableName:
+  #   Type: AWS::Serverless::SimpleTable
+  #   Properties:
+  #     PrimaryKey:
+  #       Name: id
+  #       Type: String
+  #     ProvisionedThroughput:
+  #       ReadCapacityUnits: 5
+  #       WriteCapacityUnits: 5
+  # Api:
+  #   Type: AWS::Serverless::Api
+  #   Properties:
+  #     StageName: prod
+  #     DefinitionUri: swagger.yml
+
+# AWSTemplateFormatVersion: '2010-09-09'
+# Transform: AWS::Serverless-2016-10-31
+# Resources:
+#   Api:
+#     Type: AWS::Serverless::Api
+#     Properties:
+#       Handler: aws-webapper
+#       Runtime: go1.x
+#       StageName: prod
+#       DefinitionUri: swagger.yml
