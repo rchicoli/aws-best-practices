@@ -1,0 +1,29 @@
+version: '3'
+services:
+  app:
+    image: 12345.dkr.ecr.eu-west-1.amazonaws.com/repo/app:0.0.1
+    ports:
+      - '8080:8080'
+    environment:
+      LOG_LEVEL: 'debug'
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: '/ecs/cluster'
+        awslogs-region: eu-west-1
+        awslogs-stream-prefix: app
+    # memory: 2g
+    # mem_reservation: 1g
+    # cpu_shares: 100
+    # cpu_count: 2
+    # cpu: '1'
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '1'
+    #       memory: 2GB
+    #     reservations:
+    #       cpus: '0.50'
+    #       memory: 1GB
+    #   mode: replicated
+    #   replicas: 2
